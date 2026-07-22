@@ -1,0 +1,6 @@
+{
+  "name": "Portafolio y CV - Iker Álvarez Cañadillas",
+  "description": "Web de presentación, portafolio de proyectos, CV, certificado de inglés B2 y visión sobre Inteligencia Artificial y Arquitectura Web de Iker Álvarez Cañadillas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
