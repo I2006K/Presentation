@@ -44,15 +44,37 @@ export const AIVision: React.FC<AIVisionProps> = ({ darkMode }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ problemDescription: text })
       });
-      const data = await response.json();
+      let data: any = null;
+      if (response.ok) {
+        data = await response.json();
+      }
+
       if (data && data.title) {
         setArchResult(data);
+      } else {
+        setArchResult(getFallbackArchitecture(text));
       }
     } catch (err) {
-      console.error('Error synthesizing architecture:', err);
+      console.warn('Backend architecture fetch unavailable, using client fallback:', err);
+      setArchResult(getFallbackArchitecture(text));
     } finally {
       setLoadingArch(false);
     }
+  };
+
+  const getFallbackArchitecture = (problemText: string): ArchitectureProposal => {
+    return {
+      title: `Arquitectura de Solución para: "${problemText.slice(0, 35)}..."`,
+      summary: 'Diseño de arquitectura desacoplada y orientada a la eliminación de tareas repetitivas y cuellos de botella mediante automatización acelerada.',
+      components: [
+        { name: 'Interfaz de Usuario SPA', role: 'Frontend reactivo de alta velocidad', tech: 'React 19 + TypeScript + Tailwind CSS' },
+        { name: 'Backend Micro-Servicio', role: 'Lógica de negocio y servidor seguro', tech: 'Node.js / Express + Python' },
+        { name: 'Base de Datos Relacional', role: 'Almacenamiento persistente y estructurado', tech: 'MySQL / MariaDB + Docker' },
+        { name: 'Módulo de Automatización e IA', role: 'Eliminación de trabajo repetitivo y esperas', tech: 'PowerAutomate + Gemini API' }
+      ],
+      aiIntegrationPoint: 'Procesamiento automatizado de entradas de datos e inferencia asíncrona.',
+      automationBenefit: 'Aumenta la velocidad de ejecución y garantiza la máxima calidad reduciendo errores de procesamiento manual.'
+    };
   };
 
   return (

@@ -54,8 +54,15 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({ isOpen, onClose, darkM
         })
       });
 
-      const data = await response.json();
-      const aiReplyText = data.reply || 'Disculpa, ocurrió un error temporal en la respuesta.';
+      let aiReplyText = '';
+      if (response.ok) {
+        const data = await response.json();
+        aiReplyText = data.reply;
+      }
+
+      if (!aiReplyText) {
+        aiReplyText = getSmartClientReply(userMsgText);
+      }
 
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -66,19 +73,50 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({ isOpen, onClose, darkM
 
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err) {
-      console.error('Error querying AI assistant:', err);
+      console.warn('Backend API fetch unavailable, utilizing client smart responder:', err);
+      const fallbackText = getSmartClientReply(userMsgText);
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           sender: 'ai',
-          text: 'Disculpa, no pude conectarme al servidor. Puedes contactar directamente a Iker a través de ikeralvarez21@gmail.com o +34 653 551 854.',
+          text: fallbackText,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getSmartClientReply = (userMessage: string): string => {
+    const msg = userMessage.toLowerCase();
+
+    if (msg.includes("misión") || msg.includes("mision") || msg.includes("programador") || msg.includes("filosofía") || msg.includes("filosofia") || msg.includes("más") || msg.includes("mas") || msg.includes("propósito") || msg.includes("proposito")) {
+      return "La misión de Iker va más allá de escribir código: busca ayudar a las personas a resolver sus problemas reales, combatiendo la repetición, la monotonía y los tiempos de espera utilizando las últimas herramientas de automatización e Inteligencia Artificial para crear soluciones con la mayor velocidad y calidad posible.";
+    }
+
+    if (msg.includes("l'oréal") || msg.includes("loreal") || msg.includes("trabajo") || msg.includes("empresa") || msg.includes("experiencia")) {
+      return "Iker trabaja actualmente en Customer Care Management en L'Oréal España y Portugal. Desarrolla herramientas informáticas y scripts para automatizar procesos contables e internos, reduciendo tiempos de espera y optimizando los flujos de trabajo del equipo.";
+    }
+
+    if (msg.includes("inglés") || msg.includes("ingles") || msg.includes("cambridge") || msg.includes("b2") || msg.includes("linguaskill") || msg.includes("certificado") || msg.includes("idioma")) {
+      return "Iker cuenta con el certificado oficial Cambridge Linguaskill B2 (puntuación promedio: 161). Destaca especialmente en Listening (166), Reading (162) y Writing (163). Utiliza el inglés habitualmente para leer documentación técnica oficial y en proyectos de voluntariado docente.";
+    }
+
+    if (msg.includes("edad") || msg.includes("años") || msg.includes("nacimiento") || msg.includes("cumple")) {
+      return "Iker nació el 25 de junio de 2006 (20 años). A sus 20 años combina su formación universitaria en Ingeniería Informática en la UNED con experiencia profesional sólida y pasión por la tecnología.";
+    }
+
+    if (msg.includes("tecnología") || msg.includes("tecnologia") || msg.includes("stack") || msg.includes("lenguaje") || msg.includes("java") || msg.includes("python") || msg.includes("sql")) {
+      return "El stack técnico de Iker abarca Java, JavaScript/TypeScript (React, Node.js), PHP, Python, SQL (MySQL, MariaDB, HeidiSQL), Docker Desktop, PowerAutomate y Git/GitHub.";
+    }
+
+    if (msg.includes("estudios") || msg.includes("uned") || msg.includes("daw") || msg.includes("educación") || msg.includes("educacion") || msg.includes("grado")) {
+      return "Iker es titulado en Grado Superior de Desarrollo de Aplicaciones Web (DAW) por el IES Pío Baroja y actualmente cursa el Grado en Ingeniería Informática en la UNED en paralelo a su trabajo en L'Oréal.";
+    }
+
+    return "¡Hola! Soy Iker AI. Iker es Desarrollador Full Stack de 20 años en Madrid. Su propósito no es solo programar, sino ayudar a la gente a solucionar sus problemas, combatiendo la repetición y los tiempos de espera mediante las mejores herramientas disponibles. ¿Te gustaría conocer más sobre sus proyectos, su experiencia en L'Oréal o sus estudios en la UNED?";
   };
 
   const samplePrompts = [
